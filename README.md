@@ -30,6 +30,17 @@ docker compose --profile dev up --build
 
 Запросы с фронта идут на `/api/...`; Vite проксирует их на `backend-dev:8080`.
 
+### Сидирование данных (фикстуры)
+
+Из **корня репозитория** (стек с профилем `dev` уже запущен) сначала примените миграции, затем загрузите демо-данные:
+
+```bash
+docker compose --profile dev exec backend-dev php bin/console doctrine:migrations:migrate --no-interaction
+docker compose --profile dev exec backend-dev php bin/console doctrine:fixtures:load --no-interaction
+```
+
+Фикстура [DemoShopOrdersFixture](backend/src/DataFixtures/DemoShopOrdersFixture.php): один магазин, 10 заказов, по одной записи в `telegram_send_log` на заказ (7 со статусом `SENT`, 3 — `FAILED`). Команда `doctrine:fixtures:load` **полностью очищает БД** и заново создаёт строки из фикстур. Фикстуры подключены только в окружениях `dev` и `test` ([DoctrineFixturesBundle](https://symfony.com/bundles/DoctrineFixturesBundle/current/index.html)).
+
 ## Продакшен-профиль (Docker)
 
 Поднимает `postgres`, `backend-prod` (код из образа, без bind-mount), `frontend-prod` (сборка + Nginx, прокси `/api/` → `backend-prod`).
