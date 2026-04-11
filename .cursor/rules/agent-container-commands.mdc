@@ -1,0 +1,28 @@
+---
+description: Консольные команды стека — только через docker compose exec; контейнеры не поднимать
+alwaysApply: true
+---
+
+# Консоль и Docker для агента
+
+## Что делает разработчик до работы с агентом
+
+Разработчик сам поднимает стек (например `docker compose --profile dev up --build` из корня репозитория). **Не** запускай от имени агента `docker compose up`, `down`, `restart`, `build`, `pull` и аналоги, если пользователь явно не попросил.
+
+## Где выполнять команды проекта
+
+Команды, которые трогают окружение приложения (**PHP, Composer, Symfony console, npm, node, npx**, миграции, тесты, линтеры, сборка фронта/бэка), выполняй **внутри уже запущенных** сервисов через `docker compose exec` из корня репозитория (где лежит `compose.yml`). Не вызывай эти инструменты на хосте в `backend/` и `frontend/`, если нет явного указания пользователя.
+
+| Задача | Сервис (профиль `dev`) | Пример |
+|--------|------------------------|--------|
+| Symfony, PHP, Composer | `backend-dev` | `docker compose exec backend-dev php bin/console doctrine:migrations:status` |
+| npm, Vite, фронт | `frontend-dev` | `docker compose exec frontend-dev npm run build` |
+| psql и утилиты БД | `postgres` | `docker compose exec postgres psql -U app -d app -c 'SELECT 1'` |
+
+Рабочие каталоги в образах: backend — `/var/www/html`, frontend — `/app` (см. `backend/Dockerfile`, `frontend/Dockerfile.dev`).
+
+Профиль **prod**: сервисы `backend-prod`, `frontend-prod` — только если в контексте явно prod и контейнеры уже подняты с `--profile prod`.
+
+## Исключения
+
+Универсальные команды вне стека (например `git`), чтение/правка файлов через инструменты редактора — на хосте как обычно.
