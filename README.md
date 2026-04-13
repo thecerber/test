@@ -41,6 +41,8 @@ docker compose --profile dev exec backend-dev php bin/console doctrine:fixtures:
 
 Фикстура [DemoShopOrdersFixture](backend/src/DataFixtures/DemoShopOrdersFixture.php): один магазин, 10 заказов, по одной записи в `telegram_send_log` на заказ (7 со статусом `SENT`, 3 — `FAILED`). Команда `doctrine:fixtures:load` **полностью очищает БД** и заново создаёт строки из фикстур. Фикстуры подключены только в окружениях `dev` и `test` ([DoctrineFixturesBundle](https://symfony.com/bundles/DoctrineFixturesBundle/current/index.html)).
 
+После этого можем открыть интерфейс по ссылке: http://localhost:5173/shops/1/growth/telegram
+
 ### Тесты backend (Docker)
 
 Из **корня репозитория** при запущенном стеке `dev`:
@@ -116,3 +118,4 @@ VITE_API_TARGET=http://127.0.0.1:8080 npm run dev
 - Улучшить на фронте вывод ошибок валидации - с бэка возвращать сразу все ошибки и на фронте показывать из под соответствующими полями форм.
 
 !!! Не удалось протестировать реальную отправку через телеграм, даже под VPN из нескольких стран у меня локально не взлетело (Failed to open stream: Connection timed out)
+
