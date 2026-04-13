@@ -76,31 +76,12 @@ docker compose --profile prod up --build
 ```
 
 - Сайт: <http://localhost:3000>
-- API с браузера: тот же origin, путь `/api/health`
+- API с браузера: тот же origin, путь `/api/health` (достучимся до бэка)
+- После выполнения миграции и фикстур в бэке можем работать с интерфейсом: <http://localhost:3000/shops/1/growth/telegram>
 
 Профили `dev` и `prod` **не смешивайте** на одних и тех же портах (оба backend по умолчанию слушают `8080` на хосте).
 
 После изменений кода в `prod` пересоберите образы: `docker compose --profile prod build --no-cache` (или `up --build`).
-
-## Локально без Docker
-
-**Backend:**
-
-```bash
-cd backend
-composer install
-# Убедитесь, что PostgreSQL запущен и DATABASE_URL в .env верный
-symfony server:start   # или php -S 127.0.0.1:8080 -t public
-```
-
-**Frontend:**
-
-```bash
-cd frontend
-npm install
-# Прокси /api на Symfony (по умолчанию 127.0.0.1:8080)
-VITE_API_TARGET=http://127.0.0.1:8080 npm run dev
-```
 
 ## Проверка
 
