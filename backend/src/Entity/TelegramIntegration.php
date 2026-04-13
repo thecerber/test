@@ -107,6 +107,13 @@ class TelegramIntegration
         return $this->updatedAt;
     }
 
+    public function refreshUpdatedAt(): static
+    {
+        $this->updatedAt = new \DateTimeImmutable();
+
+        return $this;
+    }
+
     #[ORM\PrePersist]
     public function touchCreatedAt(): void
     {
