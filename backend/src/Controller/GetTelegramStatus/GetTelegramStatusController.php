@@ -30,8 +30,10 @@ final class GetTelegramStatusController extends AbstractController
 
         return $this->json([
             'enabled' => $status->enabled,
-            'botToken' => SensitiveValueMasker::maskKeepingEdges($status->botToken),
-            'chatId' => SensitiveValueMasker::maskKeepingEdges($status->chatId),
+            'botToken' => $status->botToken,
+            'botTokenMasked' => SensitiveValueMasker::maskKeepingEdges($status->botToken),
+            'chatId' => $status->chatId,
+            'chatIdMasked' => SensitiveValueMasker::maskKeepingEdges($status->chatId),
             'lastSentAt' => $status->lastSentAt?->format(\DateTimeInterface::ATOM),
             'sentCount' => $status->sentCount,
             'failedCount' => $status->failedCount,
