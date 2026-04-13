@@ -80,6 +80,24 @@ final class CreateOrderControllerTest extends WebTestCase
         self::assertNotNull($log->getSentAt());
     }
 
+    public function testCreatesOrderAndSkipsTelegramWhenIntegrationDisabled(): void
+    {
+        $shopId = $this->createShopWithTelegram('Disabled telegram shop', false);
+
+        $this->client->jsonRequest('POST', sprintf('/api/shops/%d/orders', $shopId), [
+            'number' => 'A-1008',
+            'total' => 1490,
+            'customerName' => 'Мария',
+        ]);
+
+        self::assertResponseStatusCodeSame(201);
+        $response = json_decode((string) $this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+
+        self::assertSame('skipped', $response['telegramStatus']);
+        self::assertCount(1, $this->entityManager->getRepository(Order::class)->findAll());
+        self::assertCount(0, $this->entityManager->getRepository(TelegramSendLog::class)->findAll());
+    }
+
     public function testTelegramFailureDoesNotBreakOrderCreation(): void
     {
         self::getContainer()->set(TelegramMessageSenderInterface::class, new class () implements TelegramMessageSenderInterface {
