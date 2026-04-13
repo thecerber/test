@@ -16,7 +16,7 @@ type UseTelegramGrowthResult = {
   error: string | null
   saveError: string | null
   saveSuccess: string | null
-  save: (payload: SaveTelegramFormPayload) => Promise<void>
+  save: (payload: SaveTelegramFormPayload) => Promise<boolean>
 }
 
 export function useTelegramGrowth(shopId?: string): UseTelegramGrowthResult {
@@ -47,10 +47,14 @@ export function useTelegramGrowth(shopId?: string): UseTelegramGrowthResult {
   }, [shopId])
 
   const save = useCallback(
-    async ({ botTokenInput, chatIdInput, enabled }: SaveTelegramFormPayload) => {
+    async ({
+      botTokenInput,
+      chatIdInput,
+      enabled,
+    }: SaveTelegramFormPayload): Promise<boolean> => {
       if (!shopId || !status) {
         setSaveError('Нельзя сохранить: статус интеграции ещё не загружен.')
-        return
+        return false
       }
 
       const botToken = botTokenInput.trim() || status.botToken || ''
@@ -60,7 +64,7 @@ export function useTelegramGrowth(shopId?: string): UseTelegramGrowthResult {
         setSaveError(
           'Введите botToken и chatId или убедитесь, что у магазина уже есть сохранённые значения.',
         )
-        return
+        return false
       }
 
       setIsSaving(true)
@@ -75,8 +79,10 @@ export function useTelegramGrowth(shopId?: string): UseTelegramGrowthResult {
         })
         await loadStatus()
         setSaveSuccess('Настройки Telegram сохранены.')
+        return true
       } catch (e: unknown) {
         setSaveError(e instanceof Error ? e.message : String(e))
+        return false
       } finally {
         setIsSaving(false)
       }

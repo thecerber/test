@@ -50,7 +50,12 @@ export function TelegramGrowthPage() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    await save({ botTokenInput, chatIdInput, enabled })
+    const isSaved = await save({ botTokenInput, chatIdInput, enabled })
+
+    if (isSaved) {
+      setBotTokenInput('')
+      setChatIdInput('')
+    }
   }
 
   return (
@@ -99,7 +104,7 @@ export function TelegramGrowthPage() {
             </button>
           </div>
         </form>
-        {saveError && <p className="error">Ошибка сохранения: {saveError}</p>}
+        {saveError && <p className="error">{saveError}</p>}
         {saveSuccess && <p>{saveSuccess}</p>}
       </section>
 
@@ -107,7 +112,7 @@ export function TelegramGrowthPage() {
         <h2>Статус</h2>
         <dl className="status-grid">
           <dt>Включена</dt>
-          <dd>{status ? String(status.enabled) : '—'}</dd>
+          <dd>{status ? (status.enabled ? 'Да' : 'Нет') : '—'}</dd>
           <dt>Дата и время последней успешной отправки</dt>
           <dd>{formatDate(status?.lastSentAt ?? null)}</dd>
           <dt>Количество успешных отправок за последние 7 дней</dt>

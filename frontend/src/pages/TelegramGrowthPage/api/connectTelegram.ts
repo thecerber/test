@@ -11,12 +11,25 @@ export async function connectTelegram(
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Accept': 'application/json',
     },
     body: JSON.stringify(payload),
   })
 
   if (!response.ok) {
-    throw new Error(`${response.status} ${response.statusText}`)
+    let detail = ''
+
+    try {
+      const body = (await response.json()) as { detail?: unknown }
+
+      if (typeof body.detail === 'string' && body.detail.trim()) {
+        detail = body.detail.trim()
+      }
+    } catch {
+      // ignore non-json error body
+    }
+
+    throw new Error(detail ? detail : `${response.status} ${response.statusText}`)
   }
 
   return (await response.json()) as ConnectTelegramResponse
