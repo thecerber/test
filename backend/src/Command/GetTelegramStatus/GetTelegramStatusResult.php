@@ -8,6 +8,7 @@ final readonly class GetTelegramStatusResult
 {
     public function __construct(
         public bool $enabled,
+        public ?string $botToken,
         public ?string $chatId,
         public ?\DateTimeImmutable $lastSentAt,
         public int $sentCount,

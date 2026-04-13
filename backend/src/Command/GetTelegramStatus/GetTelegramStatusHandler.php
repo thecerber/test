@@ -28,6 +28,7 @@ final readonly class GetTelegramStatusHandler
         if ($integration === null) {
             return new GetTelegramStatusResult(
                 enabled: false,
+                botToken: null,
                 chatId: null,
                 lastSentAt: null,
                 sentCount: 0,
@@ -68,6 +69,7 @@ final readonly class GetTelegramStatusHandler
 
         return new GetTelegramStatusResult(
             enabled: $integration->isEnabled(),
+            botToken: $integration->getBotToken(),
             chatId: $integration->getChatId(),
             lastSentAt: $lastSentLog?->getSentAt(),
             sentCount: (int) ($counts['sentCount'] ?? 0),

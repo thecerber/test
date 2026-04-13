@@ -54,6 +54,7 @@ final class GetTelegramStatusControllerTest extends WebTestCase
         $response = json_decode((string) $this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         self::assertTrue($response['enabled']);
+        self::assertSame('1234*******************************KLMN', $response['botToken']);
         self::assertSame('-100******1265', $response['chatId']);
         self::assertNotNull($response['lastSentAt']);
         self::assertSame(2, $response['sentCount']);
@@ -73,6 +74,7 @@ final class GetTelegramStatusControllerTest extends WebTestCase
         $response = json_decode((string) $this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         self::assertFalse($response['enabled']);
+        self::assertNull($response['botToken']);
         self::assertNull($response['chatId']);
         self::assertNull($response['lastSentAt']);
         self::assertSame(0, $response['sentCount']);
@@ -99,6 +101,7 @@ final class GetTelegramStatusControllerTest extends WebTestCase
         $response = json_decode((string) $this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         self::assertFalse($response['enabled']);
+        self::assertSame('1234*******************************KLMN', $response['botToken']);
         self::assertSame('********', $response['chatId']);
         self::assertNull($response['lastSentAt']);
         self::assertSame(0, $response['sentCount']);

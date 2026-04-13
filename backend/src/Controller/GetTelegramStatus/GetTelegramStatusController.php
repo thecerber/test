@@ -6,6 +6,7 @@ namespace App\Controller\GetTelegramStatus;
 
 use App\Command\GetTelegramStatus\GetTelegramStatusCommand;
 use App\Command\GetTelegramStatus\GetTelegramStatusHandler;
+use App\Helper\SensitiveValueMasker;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,29 +30,11 @@ final class GetTelegramStatusController extends AbstractController
 
         return $this->json([
             'enabled' => $status->enabled,
-            'chatId' => $this->maskChatId($status->chatId),
+            'botToken' => SensitiveValueMasker::maskKeepingEdges($status->botToken),
+            'chatId' => SensitiveValueMasker::maskKeepingEdges($status->chatId),
             'lastSentAt' => $status->lastSentAt?->format(\DateTimeInterface::ATOM),
             'sentCount' => $status->sentCount,
             'failedCount' => $status->failedCount,
         ], Response::HTTP_OK);
-    }
-
-    private function maskChatId(?string $chatId): ?string
-    {
-        if ($chatId === null || $chatId === '') {
-            return null;
-        }
-
-        $chatIdLength = strlen($chatId);
-        if ($chatIdLength <= 8) {
-            return str_repeat('*', $chatIdLength);
-        }
-
-        return sprintf(
-            '%s%s%s',
-            substr($chatId, 0, 4),
-            str_repeat('*', $chatIdLength - 8),
-            substr($chatId, -4),
-        );
     }
 }
