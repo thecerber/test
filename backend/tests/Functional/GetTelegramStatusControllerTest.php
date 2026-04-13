@@ -54,7 +54,7 @@ final class GetTelegramStatusControllerTest extends WebTestCase
         $response = json_decode((string) $this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         self::assertTrue($response['enabled']);
-        self::assertSame('-1**********65', $response['chatId']);
+        self::assertSame('-100******1265', $response['chatId']);
         self::assertNotNull($response['lastSentAt']);
         self::assertSame(2, $response['sentCount']);
         self::assertSame(1, $response['failedCount']);
@@ -74,6 +74,32 @@ final class GetTelegramStatusControllerTest extends WebTestCase
 
         self::assertFalse($response['enabled']);
         self::assertNull($response['chatId']);
+        self::assertNull($response['lastSentAt']);
+        self::assertSame(0, $response['sentCount']);
+        self::assertSame(0, $response['failedCount']);
+    }
+
+    public function testReturnsDisabledWhenIntegrationIsTurnedOff(): void
+    {
+        $shop = (new Shop())->setName('Disabled Integration');
+        $integration = (new TelegramIntegration())
+            ->setShop($shop)
+            ->setBotToken('123456:ABCDEF_1234567890_ABCDEFGHIJKLMN')
+            ->setChatId('44556677')
+            ->setEnabled(false);
+
+        $this->entityManager->persist($shop);
+        $this->entityManager->persist($integration);
+        $this->entityManager->flush();
+
+        $this->client->request('GET', sprintf('/api/shops/%d/telegram/status', $shop->getId()));
+
+        self::assertResponseIsSuccessful();
+
+        $response = json_decode((string) $this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+
+        self::assertFalse($response['enabled']);
+        self::assertSame('********', $response['chatId']);
         self::assertNull($response['lastSentAt']);
         self::assertSame(0, $response['sentCount']);
         self::assertSame(0, $response['failedCount']);
