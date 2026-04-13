@@ -56,6 +56,13 @@
             "cache:clear": "symfony-cmd",
             "assets:install %PUBLIC_DIR%": "symfony-cmd"
         },
+        "test:db:prepare": [
+            "php bin/console doctrine:database:create --env=test --if-not-exists"
+        ],
+        "test": [
+            "@test:db:prepare",
+            "php bin/phpunit"
+        ],
         "post-install-cmd": [
             "@auto-scripts"
         ],

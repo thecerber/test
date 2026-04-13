@@ -41,6 +41,30 @@ docker compose --profile dev exec backend-dev php bin/console doctrine:fixtures:
 
 Фикстура [DemoShopOrdersFixture](backend/src/DataFixtures/DemoShopOrdersFixture.php): один магазин, 10 заказов, по одной записи в `telegram_send_log` на заказ (7 со статусом `SENT`, 3 — `FAILED`). Команда `doctrine:fixtures:load` **полностью очищает БД** и заново создаёт строки из фикстур. Фикстуры подключены только в окружениях `dev` и `test` ([DoctrineFixturesBundle](https://symfony.com/bundles/DoctrineFixturesBundle/current/index.html)).
 
+### Тесты backend (Docker)
+
+Из **корня репозитория** при запущенном стеке `dev`:
+
+```bash
+docker compose exec backend-dev composer test
+```
+
+Команда `composer test` в `backend` автоматически:
+- создаёт `app_test`, если БД ещё не существует (`doctrine:database:create --env=test --if-not-exists`);
+- запускает `phpunit`.
+
+Для запуска одного файла тестов:
+
+```bash
+docker compose exec backend-dev php bin/phpunit tests/Functional/ConnectTelegramIntegrationControllerTest.php
+```
+
+Для запуска одного тест-метода:
+
+```bash
+docker compose exec backend-dev php bin/phpunit tests/Functional/ConnectTelegramIntegrationControllerTest.php --filter testReturns404ForUnknownShop
+```
+
 ## Продакшен-профиль (Docker)
 
 Поднимает `postgres`, `backend-prod` (код из образа, без bind-mount), `frontend-prod` (сборка + Nginx, прокси `/api/` → `backend-prod`).
