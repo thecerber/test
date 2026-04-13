@@ -29,7 +29,7 @@ final class ConnectTelegramIntegrationController extends AbstractController
             shopId: $shopId,
             botToken: $request->botToken,
             chatId: $request->chatId,
-            enabled: $request->enabled,
+            enabled: $request->isEnabled(),
         ));
 
         return $this->json([

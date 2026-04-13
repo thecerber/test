@@ -11,15 +11,20 @@ final readonly class ConnectTelegramIntegrationBodyRequest
     public function __construct(
         #[Assert\NotBlank]
         #[Assert\Regex(pattern: '/^\d+:[A-Za-z0-9_-]{20,}$/')]
-        public string $botToken,
+        public string $botToken = '',
 
         #[Assert\NotBlank]
         #[Assert\Regex(pattern: '/^-?\d+$/')]
-        public string $chatId,
+        public string $chatId = '',
 
         #[Assert\NotNull]
         #[Assert\Type(type: 'bool')]
-        public bool $enabled,
+        public mixed $enabled = null,
     ) {
+    }
+
+    public function isEnabled(): bool
+    {
+        return (bool) $this->enabled;
     }
 }
